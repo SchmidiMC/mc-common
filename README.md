@@ -74,13 +74,90 @@ Lastly make sure to setup your IDE for annotation processing. This step depends 
 
 ## Features / Examples
 
-### 1. plugin.yml generation
+### 1. @Plugin
 
 In order to generate the plugin.yml automatically you need to have your Plugin class (the class extending `JavaPlugin`) to be annotated with the `@Plugin` annotation. This annotation requires some additional parameters as well as offers optional values to be used.
+
+**Parameters**:
+
+| Name |   | Description |
+|------|---| ---- |
+| name |required | The name of your plugin |
+| version | optional | The version of your plugin (defaults to "1.0") |
+| description | optional | The description of your plugin |
+| author | required | The name of the author of your plugin |
+| main | required | The path to your class extending JavaPlugin |
+
+**Example**
+
 ```java
-@Plugin(name = "Skeleton-Project", author="Schmidi", main="main.java.Start")
+@Plugin(name = "Skeleton-Project", author="Plugin-Dev", main="de.example.Start")
 public class Start extends JavaPlugin {
     ...
 }
 ```
 
+If you then compile your plugin using `mvn clean compile` (or the corresponding goal in your IDE) a `plugin.yml` file with the following structure will be generated in your out/target folder.
+```yml
+name: Skeleton-Project
+version: 1.0
+author: Plugin-Dev
+main: de.example.Start
+```
+
+### 2. @Command
+
+`mc-common` offers the ability to automatically add your commands to your `plugin.yml` as well as register them automatically using the `PluginInitializer` (see `4. PluginInitializer`). To do so the only thing you need to do is annotate your command classes with the `@Command` annotation and fill the required fields
+
+**Parameters**:
+
+| Name |   | Description |
+|------|---| ---- |
+| name | required | The name of your command (without slash) |
+| usage | required | The usage of your command |
+| description | required | The description of your command |
+| aliases | optional | Possible aliases for your command name |
+
+**Example**
+
+```java
+@de.schmidimc.mc.common.annotation.Command(name = "customBan", description = "customly bans a player", usage = "/customBan <Name> (<Reason>)", aliases = {"cBan"})
+public class BanCommand extends AbstractCommand {
+    ...
+}
+```
+
+After re-compiling the project with `mvn clean compile` this would cause the command section in your `plugin.yml` to look like the following. Your `PluginInitializer` would have an additional line as well registering the command.
+```yml
+commands:
+ customBan:
+    description: customly bans a player
+    aliases: [cBan]
+    usage: /customBan <Name> (<Reason>)
+```
+
+### 3. @Listener
+
+Another thing you can do with `mc-common` is to automatically register your Listeners. This can be simply done by annotating the appropriate classes with the `@Listener` annotation and re-compile the project using `mvn clean compile`. 
+```java
+@de.schmidimc.mc.common.annotation.Listener
+public class OnPickItemUpListener implements Listener {
+    ....
+}
+```
+
+### 4. PluginInitializer.java
+This is a generated class by the `mc-common` library which handles the registration of all commands and listeners (annotated with the appropriate annotation). After compiling your plugin the class can be found in your generated-sources folder (depends on your IDE). Together with the @Command and @Listener annotation from above the class looks like this:
+```java
+package de.example;
+public final class PluginInitializer {
+
+	public static final void init(final de.example.Start plugin) {
+		plugin.getCommand("customBan").setExecutor(new de.noel.commands.BanCommand(plugin));
+
+		plugin.getServer().getPluginManager().registerEvents(new de.noel.listener.OnPickItemUpListener(plugin), plugin);
+		
+	}
+}
+```
+To use this class you need to call `PluginInitializer.init(this)` in your `onEnable` method in your plugin class.
