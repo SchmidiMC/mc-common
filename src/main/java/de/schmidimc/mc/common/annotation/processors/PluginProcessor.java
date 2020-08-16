@@ -64,7 +64,7 @@ public class PluginProcessor extends AbstractProcessor {
             final JavaFileObject source = processingEnv.getFiler().createSourceFile("PluginInitializer");
             try (PrintWriter out = new PrintWriter(source.openWriter())) {
 
-                out.println("package de.noel;\n");
+                out.printf("package %s;\n", pluginAnnotation.main().substring(0, pluginAnnotation.main().lastIndexOf(".")));
 
                 out.println("public final class PluginInitializer {");
                 out.println();
