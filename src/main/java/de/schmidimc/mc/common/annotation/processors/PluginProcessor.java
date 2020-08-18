@@ -60,10 +60,11 @@ public class PluginProcessor extends AbstractProcessor {
 
     private void writePluginInitializerClass(RoundEnvironment roundEnv, Plugin pluginAnnotation, List<Command> commands) {
         try {
-            final JavaFileObject source = processingEnv.getFiler().createSourceFile("PluginInitializer");
+            String packageName = pluginAnnotation.main().substring(0, pluginAnnotation.main().lastIndexOf("."));
+            final JavaFileObject source = processingEnv.getFiler().createSourceFile(packageName + ".PluginInitializer");
             try (PrintWriter out = new PrintWriter(source.openWriter())) {
 
-                out.printf("package %s;\n", pluginAnnotation.main().substring(0, pluginAnnotation.main().lastIndexOf(".")));
+                out.printf("package %s;\n", packageName);
 
                 out.println("public final class PluginInitializer {");
                 out.println();
