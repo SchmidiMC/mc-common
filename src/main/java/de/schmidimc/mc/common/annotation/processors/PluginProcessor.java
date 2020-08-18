@@ -3,13 +3,12 @@ package de.schmidimc.mc.common.annotation.processors;
 import com.google.auto.service.AutoService;
 import de.schmidimc.mc.common.annotation.Command;
 import de.schmidimc.mc.common.annotation.Listener;
-import de.schmidimc.mc.common.annotation.Plugin;
+import de.schmidimc.mc.common.annotation.plugin.Plugin;
 import de.schmidimc.mc.common.helper.ReflectionHelper;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
@@ -22,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@SupportedAnnotationTypes("de.schmidimc.mc.common.annotation.Plugin")
+@SupportedAnnotationTypes("de.schmidimc.mc.common.annotation.plugin.Plugin")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class PluginProcessor extends AbstractProcessor {
